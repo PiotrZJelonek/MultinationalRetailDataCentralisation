@@ -5,6 +5,12 @@
 
 ## Subtitle
 
+## unordered list
+
+- apple
+- banana
+- orange
+
 
 ### Sub sub title
 
@@ -14,6 +20,8 @@
 
 1. item on a lit
 1. another item on a list
+
+My brave new sentece. Here are *italics*, and here is **bold**
 
 > callout
 
