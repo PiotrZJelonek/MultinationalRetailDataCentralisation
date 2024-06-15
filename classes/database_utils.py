@@ -9,3 +9,10 @@ class DatabaseConnector:
     # class constructor
     def __init__(self):
         pass
+
+
+    def read_db_creds():
+        """
+        Read database credentials from .yaml file
+        """
+        return pd.read_yaml('config/db_creds.yaml')
