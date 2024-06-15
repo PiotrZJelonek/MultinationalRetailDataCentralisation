@@ -1,5 +1,5 @@
 import pandas as pd
-import numps as np
+import numpy as np
 
 # class definition
 class DataCleaning:

@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 # class definition
-class DatabaseConector:
+class DatabaseConnector:
     """
     This class will connect with and upload data to the database.
     """
