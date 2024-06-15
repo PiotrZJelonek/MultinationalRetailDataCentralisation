@@ -8,7 +8,6 @@ from time import time
 def setup(project_name: str) -> Tuple[dict, float]:
     """
     Create paths for the experiment. Start the clock.
-
     """
     path = Path(os.pardir) # os.getcwd()
 
