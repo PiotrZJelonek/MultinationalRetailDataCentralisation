@@ -25,7 +25,17 @@ def main():
     # process
     # ...
 
+    dc = DatabaseConnector(paths=paths)
+    config_dict = dc.read_db_creds()
+
+    print(config_dict)
+
     print('hello word!')
+
+    import os
+
+    print(os.getcwd())
+    print(os.pardir)
 
     # cleanup
     cleanup(paths=paths, start_time=start_time, project_name=project_name)

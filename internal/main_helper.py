@@ -10,7 +10,7 @@ def setup(project_name: str) -> Tuple[dict, float]:
     Create paths for the experiment. Start the clock.
 
     """
-    path = Path(os.pardir)
+    path = Path(os.pardir) # os.getcwd()
 
     # define paths
     paths = dict()
@@ -65,4 +65,3 @@ def cleanup(paths: dict, start_time: float, project_name: str) -> None:
 
     # clean logs
     # clean_logs(paths)
-    
