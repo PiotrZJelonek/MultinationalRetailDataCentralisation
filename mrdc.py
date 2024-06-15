@@ -1,2 +1,0 @@
-# xxxYZ
-print('hello word!')
