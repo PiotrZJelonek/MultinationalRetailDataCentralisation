@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from classes.database_utils import DatabaseConnector
 
 # class definition
 class DataExtractor:
@@ -8,10 +9,18 @@ class DataExtractor:
     that help extract data from different data sources.
     """
     # class constructor
-    def __init__(self):
-        self.value = 7
+    def __init__(self, dc: DatabaseConnector):
+    
+        self.dc = dc
 
     # methods
+    def read_rds_table(self, table_name: str) -> pd.DataFrame:
+        """
+        Read data from a table in the database
+        """
+        return pd.read_sql_table(table_name, self.dc.engine)
+
+
     def fetch_csv(self):
         """
         Extract data from .csv files

@@ -1,13 +1,10 @@
 # Main 'Multinational Retail Centralisation' project runner
 from fire import Fire
+from loguru import logger
 from internal.main_helper import (
     setup,
     cleanup,
 )
-
-import numpy as np
-import pandas as pd
-import os
 from classes.database_utils import DatabaseConnector
 from classes.data_extraction import DataExtractor
 from classes.data_cleaning import DataCleaning
@@ -22,20 +19,24 @@ def main():
     # setup
     paths, start_time = setup(project_name=project_name)
 
-    # process
-    # ...
+    # instantiate the connector
+    dc = DatabaseConnector(paths_dict=paths)
 
-    dc = DatabaseConnector(paths=paths)
-    config_dict = dc.read_db_creds()
+    # select table
+    table_id = 7
+    table_name = dc.tables_list[table_id]
 
-    print(config_dict)
+    # instantiate data extractor
+    de = DataExtractor(dc=dc) 
 
-    print('hello word!')
+    # fetch a table
+    df = de.read_rds_table(table_name=table_name)
 
-    import os
-
-    print(os.getcwd())
-    print(os.pardir)
+    # log table name and head
+    logger.info("")
+    logger.info(f" table {table_id} - {table_name}")
+    logger.info("")
+    logger.info(print(df.head(5)))
 
     # cleanup
     cleanup(paths=paths, start_time=start_time, project_name=project_name)

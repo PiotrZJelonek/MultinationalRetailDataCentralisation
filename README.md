@@ -1,6 +1,8 @@
 # MultinationalRetailDataCentralisation
 'Multinational Retail Data Centralisation' data handling project @AiCore
 
+The main runner: run_mrdc.py
+
 # Title
 
 ## Subtitle
