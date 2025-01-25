@@ -34,7 +34,7 @@ class DatabaseConnector:
         # list tables
         self.list_db_tables(verbose=verbose)
 
-
+    # class methods
     def read_db_creds(self, yaml_files_list: list[str], verbose: Optional[bool] = False):
         """
         Read database credentials from a list of .yaml file
@@ -109,10 +109,36 @@ class DatabaseConnector:
                 logger.info("List of available database tables:")
                 logger.info("")
 
-                for table in self.tables_list:
-                    logger.info(f"    {table},")
+                for idx, table in enumerate(self.tables_list):
+                    logger.info(f"    {idx}: {table},")
     
         except Exception as e:
             logger.error(f"list_db_tables: cound not fetch tables names - {e}")
+
+
+    def upload_to_db(self, df: pd.DataFrame, table_name: str, verbose: Optional[bool] = False):
+        """
+        Upload pandas dataframe to postgres database
+        """
+        try:
+            df.to_sql(table_name, self.engine, if_exists='replace')
+
+            if verbose: 
+                logger.info("")
+                logger.info(f"{table_name} was sucessfully uploaded to the database.")
+
+        except Exception as e:
+            logger.error(f"upload_to_db: could not upload {table_name} to the database - {e}")
+
+
+        """
+        e
+        Now create a method in your DatabaseConnector class called upload_to_db. This method will take in a Pandas DataFrame and table name to upload to as an argument.
+
+        Step 8:
+
+        Once extracted and cleaned use the upload_to_db method to store the data in your sales_data database in a table named dim_users.
+        """
+
 
     
