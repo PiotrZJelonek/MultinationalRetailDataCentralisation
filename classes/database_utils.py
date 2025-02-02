@@ -20,58 +20,119 @@ class DatabaseConnector:
 
         # define fields
         self.paths_dict = paths_dict
-        self.db_creds_dict = None
+        self.credentials_dict = None
         self.engine = None
         self.tables_list = []
         
-        # read password and database credentials
-        yaml_files_list = ['postgres_creds.yaml', 'db_creds.yaml']
-        self.read_db_creds(yaml_files_list=yaml_files_list, verbose=verbose)
+        # # read password and database credentials
+        # yaml_files_list = ['postgres_creds.yaml', 'db_creds.yaml']
+        # self.read_db_creds(yaml_files_list=yaml_files_list, verbose=verbose)
 
-        # read database credentials
-        self.init_db_engine(verbose=verbose)
+        # # read database credentials
+        # self.init_db_engine(verbose=verbose)
 
-        # list tables
-        self.list_db_tables(verbose=verbose)
+        # # list tables
+        # self.list_db_tables(verbose=verbose)
 
     # class methods
-    def read_db_creds(self, yaml_files_list: list[str], verbose: Optional[bool] = False):
+
+
+    # def read_db_creds(self, yaml_files_list: list[str], verbose: Optional[bool] = False):
+    #     """
+    #     Read database credentials from a list of .yaml file
+    #     """
+    #     for yaml_file in yaml_files_list:
+
+    #         # Define the path to your YAML file
+    #         load_path = self.paths_dict['config'] / yaml_file
+
+    #         # Load the YAML file
+    #         try:
+    #             # load yaml credentials, update the object
+    #             with open(load_path , 'r') as file:
+    #                 new_creds_dict = yaml.safe_load(file)
+
+    #             if self.db_creds_dict is None:
+    #                 self.db_creds_dict = new_creds_dict
+    #             else:
+    #                 (self.db_creds_dict).update(new_creds_dict)
+
+    #         # handle errors
+    #         except FileNotFoundError:
+    #             logger.error(f"read_db_creds: The file {yaml_file} does not exist.")
+    #         except yaml.YAMLError as exc:
+    #             logger.error(f"read_db_creds: error while parsing {yaml_file} file - {exc}")
+
+    #     # log credentials
+    #     if verbose:
+    #         logger.info("")
+    #         logger.info("The following database credentials were succesfully loaded:")
+    #         logger.info("")
+    #         for key in self.db_creds_dict.keys():
+    #             logger.info(f"    {key}:")
+    #             logger.info(f"      {self.db_creds_dict[key]}")
+
+    # class methods
+
+    def read_db_creds(self, yaml_file: str, verbose: Optional[bool] = False):
         """
-        Read database credentials from a list of .yaml file
+        Read database credentials from a .yaml file
         """
-        for yaml_file in yaml_files_list:
+        file_path = self.paths_dict['config'] / yaml_file
+        try:
+            # load yaml credentials, update the object
+            with open(file_path , 'r') as f:
+                self.credentials_dict = yaml.safe_load(f)
 
-            # Define the path to your YAML file
-            load_path = self.paths_dict['config'] / yaml_file
-
-            # Load the YAML file
-            try:
-                # load yaml credentials, update the object
-                with open(load_path , 'r') as file:
-                    new_creds_dict = yaml.safe_load(file)
-
-                if self.db_creds_dict is None:
-                    self.db_creds_dict = new_creds_dict
-                else:
-                    (self.db_creds_dict).update(new_creds_dict)
-
-            # handle errors
-            except FileNotFoundError:
-                logger.error(f"read_db_creds: The file {yaml_file} does not exist.")
-            except yaml.YAMLError as exc:
-                logger.error(f"read_db_creds: error while parsing {yaml_file} file - {exc}")
+        except FileNotFoundError:
+            logger.error(f"read_db_creds: The file {yaml_file} does not exist.")
+        except yaml.YAMLError as exc:
+            logger.error(f"read_db_creds: error while parsing {yaml_file} file - {exc}")
 
         # log credentials
         if verbose:
             logger.info("")
             logger.info("The following database credentials were succesfully loaded:")
             logger.info("")
-            for key in self.db_creds_dict.keys():
+            for key in self.credentials_dict.keys():
                 logger.info(f"    {key}:")
-                logger.info(f"      {self.db_creds_dict[key]}")
+                logger.info(f"      {self.credentials_dict[key]}")
+                # cred_str = self.credentials_dict[key]
+                # cred_str_list = cred_str.split('_')
+                # cred_str_list = [s.lower() for s in cred_str_list]
+                # if 'password' not in cred_str_list: 
+                #     logger.info(f"      {self.credentials_dict[key]}")
+                # else:
+                #     logger.info(f"      *")
+
+    
+    def init_db_engine(self, yaml_file: str, verbose: Optional[bool] = False):
+        """
+        Initialise and return an sqlalchemy database engine
+        """
+        self.read_db_creds(yaml_file=yaml_file, verbose=verbose)
+
+        HOST = self.credentials_dict.get("HOST")
+        PASSWORD = self.credentials_dict.get("PASSWORD")
+        USER = self.credentials_dict.get("USER")
+        DATABASE = self.credentials_dict.get("DATABASE")
+        PORT = self.credentials_dict.get("PORT")
+
+        # create sqlalchemy engine
+        try:
+            engine = create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
+            engine.execution_options(isolation_level="AUTOCOMMIT").connect()
+            self.engine = engine
+
+            if verbose: 
+                logger.info("")
+                logger.info("Sqlalchemy engine was sucessfullt created.")
+
+        except Exception as e:
+            logger.error(f"init_db_engine: could not initiate the engine - {e}")
 
 
-    def init_db_engine(self, verbose: Optional[bool] = False):
+    def init_local_db_engine(self, verbose: Optional[bool] = False):
         """
         Initialise and return an sqlalchemy database engine
         """
@@ -79,7 +140,7 @@ class DatabaseConnector:
         DBAPI = 'psycopg2'
         HOST = 'localhost'
         USER = 'postgres'
-        PASSWORD = self.db_creds_dict['RDS_POSTGRES']
+        PASSWORD = self.credentials_dict['RDS_POSTGRES']
         DATABASE = 'Pagila'
         PORT = 5432
 
@@ -89,7 +150,7 @@ class DatabaseConnector:
 
             if verbose: 
                 logger.info("")
-                logger.info("Sqlalchemy engine was sucessfullt created.")
+                logger.info("Sqlalchemy engine was sucessfully created.")
 
         except Exception as e:
             logger.error(f"init_db_engine: could not initiate the engine - {e}")
@@ -139,6 +200,3 @@ class DatabaseConnector:
 
         Once extracted and cleaned use the upload_to_db method to store the data in your sales_data database in a table named dim_users.
         """
-
-
-    

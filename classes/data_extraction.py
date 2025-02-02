@@ -14,7 +14,7 @@ class DataExtractor:
         self.dc = dc
 
     # methods
-    def read_rds_table(self, table_name: str) -> pd.DataFrame:
+    def read_aws_table(self, table_name: str) -> pd.DataFrame:
         """
         Read data from a table in the database
         """
